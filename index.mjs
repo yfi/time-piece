@@ -396,20 +396,22 @@ function instance($$self, $$props, $$invalidate) {
 	let hours;
 	let minutes;
 	let seconds;
-	let timezone = $$props["time-zone"] || $$props["timezone"] || "America/Toronto";
+	let timezone = $$props["time-zone"] || $$props["timezone"];
 	let secondHand = $$props["second-hand"] || true;
-	const getLocaleString = () => new Date(new Date().toUTCString()).toLocaleString("en-US", { timeZone: timezone });
-	let time = new Date(getLocaleString());
+	const getLocaleTime = () => new Date(new Date(new Date().toUTCString()).toLocaleString("en-US", { timeZone: timezone }));
+	const getSystemTime = () => new Date();
+	const getTime = timezone ? getLocaleTime : getSystemTime;
+	let time = getTime();
 
 	setInterval(
 		() => {
-			$$invalidate(4, time = new Date(getLocaleString()));
+			$$invalidate(4, time = getTime());
 		},
 		1000
 	);
 
 	$$self.$$set = $$new_props => {
-		$$invalidate(8, $$props = assign(assign({}, $$props), exclude_internal_props($$new_props)));
+		$$invalidate(10, $$props = assign(assign({}, $$props), exclude_internal_props($$new_props)));
 	};
 
 	$$self.$$.update = () => {

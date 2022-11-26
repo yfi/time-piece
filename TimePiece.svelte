@@ -1,23 +1,27 @@
 <svelte:options tag="time-piece" />
 
 <script>
-  let timezone =
-    $$props["time-zone"] || $$props["timezone"] || "America/Toronto";
+
+  let timezone = $$props["time-zone"] || $$props["timezone"];
   let secondHand = $$props["second-hand"] || true;
 
-  const getLocaleString = () =>
-    new Date(new Date().toUTCString()).toLocaleString("en-US", {
+  const getLocaleTime = () => new Date(new Date(new Date().toUTCString()).toLocaleString("en-US", {
       timeZone: timezone,
-    });
+    }));
 
-  let time = new Date(getLocaleString());
+  const getSystemTime = () => new Date();
+  const getTime = timezone ? getLocaleTime : getSystemTime;
+
+  let time = getTime();
+
+  const interval = setInterval(() => {
+    time = getTime();
+  }, 1000);
 
   $: hours = time.getHours();
   $: minutes = time.getMinutes();
   $: seconds = time.getSeconds();
-  const interval = setInterval(() => {
-    time = new Date(getLocaleString());
-  }, 1000);
+
 </script>
 
 <svg class="clock" viewBox="-50 -50 100 100">
